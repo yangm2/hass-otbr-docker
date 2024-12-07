@@ -57,7 +57,8 @@ if ip6tables -L $otbr_forward_egress_chain 2> /dev/null; then
     ip6tables -w -F $otbr_forward_egress_chain
     ip6tables -w -X $otbr_forward_egress_chain
 fi
-bashio::log.info "OTBR firewall teardown completed."
+# bashio::log.info "OTBR firewall teardown completed."
+echo "INFO: OTBR firewall teardown completed."
 
 if test "$e" -ne 0; then
     echo "$e" > /run/s6-linux-init-container-results/exitcode
