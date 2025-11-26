@@ -5,6 +5,8 @@
 # OpenThread BorderRouter start script
 # ==============================================================================
 
+set -x
+
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 
@@ -43,7 +45,8 @@ else
     flow_control="&uart-init-deassert"
 fi
 
-otbr_log_level=$(bashio::string.lower "$(bashio::config otbr_log_level)")
+# otbr_log_level=$(bashio::string.lower "$(bashio::config otbr_log_level)")
+otbr_log_level=debug
 case "${otbr_log_level}" in
     debug)
         otbr_log_level_int="7"
@@ -70,7 +73,8 @@ case "${otbr_log_level}" in
         otbr_log_level_int="0"
         ;;
     *)
-        bashio::exit.nok "Unknown otbr_log_level: ${otbr_log_level}"
+        # bashio::exit.nok "Unknown otbr_log_level: ${otbr_log_level}"
+        echo "Unknown otbr_log_level: ${otbr_log_level}"
         ;;
 esac
 
@@ -81,7 +85,8 @@ if [ -z ${backbone_if} ]; then
 fi
 
 # shellcheck disable=SC2015
-mkdir -p /data/thread && ln -sft /var/lib /data/thread || bashio::exit.nok "Could not create directory /var/lib/thread to store Thread data."
+# mkdir -p /data/thread && ln -sft /var/lib /data/thread || bashio::exit.nok "Could not create directory /var/lib/thread to store Thread data."
+mkdir -p /data/thread && ln -sft /var/lib /data/thread || (echo "Could not create directory /var/lib/thread to store Thread data." && exit 1)
 
 # We compile the OTBR with firewall support, so otbr-agent tries to update the
 # ipsets. Therefor, create ipsets always to avoid errors from otbr-agent. Just
@@ -124,7 +129,8 @@ else
     ip6tables-legacy -P FORWARD ACCEPT
 fi
 
-if bashio::config.true 'nat64'; then
+# if bashio::config.true 'nat64'; then
+if [ "$NAT64" != "0" ] ; then
     # shellcheck disable=SC2086
     iptables -t mangle -A PREROUTING -i ${thread_if} -j MARK --set-mark 0x1001
     iptables -t nat -A POSTROUTING -m mark --mark 0x1001 -j MASQUERADE
@@ -164,3 +170,5 @@ exec s6-notifyoncheck -d -s 300 -w 300 -n 0 stdbuf -oL \
         -d${otbr_log_level_int} -v -s \
         "spinel+hdlc+uart://${device}?uart-baudrate=${baudrate}${flow_control}" \
         "trel://${backbone_if}"
+
+set +x
