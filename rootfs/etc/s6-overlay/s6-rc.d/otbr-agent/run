@@ -20,9 +20,9 @@ declare otbr_rest_listen
 declare otbr_rest_listen_port
 
 # Cleanup unused configs
-if bashio::config.exists 'autoflash_firmware'; then
-    bashio::addon.option 'autoflash_firmware'
-fi
+# if bashio::config.exists 'autoflash_firmware'; then
+#     bashio::addon.option 'autoflash_firmware'
+# fi
 
 # backbone_if="$(bashio::api.supervisor 'GET' '/network/info' '' 'first(.interfaces[] | select (.primary == true)) .interface')"
 # device=$(bashio::config 'device')
