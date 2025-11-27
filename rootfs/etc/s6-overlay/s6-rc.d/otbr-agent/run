@@ -141,14 +141,18 @@ if [ "$NAT64" != "0" ] ; then
 fi
 
 otbr_rest_listen="::"
-otbr_rest_listen_port="$(bashio::addon.port 8081)"
+# otbr_rest_listen_port="$(bashio::addon.port 8081)"
+otbr_rest_listen_port=8081
+
 
 # If user port is not set, listen on local interface only
-if ! bashio::var.has_value "${otbr_rest_listen_port}"; then
-    otbr_rest_listen="$(bashio::addon.ip_address)"
+# if ! bashio::var.has_value "${otbr_rest_listen_port}"; then
+#     otbr_rest_listen="$(bashio::addon.ip_address)"
+if [ -n "$otbr_rest_listen_port" ]
     otbr_rest_listen_port="8081"
 elif [ "${otbr_rest_listen_port}" != "8081" ]; then
-    bashio::log.warning "Custom OpenThread REST API port is not supported. Using 8081."
+    # bashio::log.warning "Custom OpenThread REST API port is not supported. Using 8081."
+    echo "Custom OpenThread REST API port is not supported. Using 8081."
     otbr_rest_listen_port="8081"
 fi
 
